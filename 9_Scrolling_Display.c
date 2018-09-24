@@ -9,7 +9,7 @@ unsigned char disp0 = 0, loops;
 
 void timer0(void) interrupt 1 {
     loops++;
-    if(loops >= 15) {
+    if(loops >= 1) {
 		//disp0 points to a data in the array
 		disp0++;
 		//prevent ArrayIndexOutOfBounds
@@ -38,20 +38,24 @@ void main() {
 		P1=0x01;
 		P0=text[disp0];
 		delay();
+		P0=0x00;		
 
 		//enable port 1_1 = 0000 0010
 		P1=0x02;
 		P0=text[disp0+1];
 		delay();
+		P0=0x00;
 
 		//enable port 1_2 = 0000 0100
 		P1=0x04;
 		P0=text[disp0+2];
 		delay();
+		P0=0x00;
 
 		//enable port 1_3 = 0000 1000
 		P1=0x08;
 		P0=text[disp0+3];
 		delay();
+		P0=0x00;
     }
 }   

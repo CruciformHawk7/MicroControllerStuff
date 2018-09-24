@@ -39,7 +39,7 @@ void printf(unsigned char s[])
 unsigned char ReadBytePC() {
 	unsigned char RcvByte=0x00;
 	while(RI==0);
-    RcvByte = (ascToNum(SBUF)<<4);
+    RcvByte = ((ascToNum(SBUF))<<4);
 	RI=0;
 	while(RI==0);
 	RcvByte = RcvByte+(ascToNum(SBUF));
@@ -49,10 +49,12 @@ unsigned char ReadBytePC() {
 }
 
 unsigned char ascToNum(unsigned char x) {
-	if (x >= 0x30 && x < 0x3A) 
-		x -= 0x30;
-	else 
+	if (x > 0x40) {
 		x -= 0x37;
+	}
+	else {
+		x -= 0x30;
+	}
 	return x;
 }
 
