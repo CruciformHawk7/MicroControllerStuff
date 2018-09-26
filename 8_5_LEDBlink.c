@@ -2,15 +2,6 @@
 
 unsigned char mode = 0;
 
-void timer0(void) interrupt 1 {
-    if (P1=1) {
-        while(P1==1);
-        //wait for P1 to turn off
-        if (mode=0) mode=1;
-        else mode=0;
-    }
-}
-
 void mode0() {
     P0=0x0F;
     delay();
@@ -45,13 +36,7 @@ void main(void) {
 	TR1=1; 	
 
     while(1) {
-        switch mode{
-            case 0:
-                mode0();
-                break;
-            case 1:
-                mode1();
-                break;
-        }
+        if(P0=0x00) mode0();
+        else mode1();
     }
 }

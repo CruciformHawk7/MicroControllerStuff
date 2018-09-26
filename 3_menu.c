@@ -3,42 +3,40 @@
 /*---------------------------------------------------------------------------------------*/
 
 #include <AT89X51.H> 
-void serial(unsigned char x);
+
+void serial(unsigned char x) {
+	SBUF=x;
+	while (TI==0);
+	TI=0;
+}  
+
+unsigned char ascToNum(unsigned char x) {
+	if (x >= 0x30 && x < 0x3A) 
+		x -= 0x30;
+	else 
+		x -= 0x37;
+	return x;
+}
 
 void byte2PC(unsigned char b) {
-	serial(testNibbile((b)>>4));
-	//!ask: why mask and left shift, left shift removes the masked nibble?
-	serial(testNibbile(b & 0x0f));
+	serial(numToAsc(b>>4));
+	serial(numToAsc(b & 0x0f));
 }
 
-unsigned char testNibbile(unsigned char x) {
-	if (x >= 0x00 && x < 0x0A) {
+unsigned char numToAsc(unsigned char x) {
+	if (x >= 0x00 && x < 0x0A) 
 		x += 0x30;
-	}
-	else {
-		//0x37 = 0x41(A) - 0x0A
+	else 
 		x += 0x37;
-		//If A, reduce it to 0, then add 0x0A, 
-		//If B, reduce it to 1, then add 0x0A = 0x0B
-		//And so on.
-	}
 	return x;
-	//sample: 0x0A returns A, 0x09 returns 9, so on.
+}
+void printf(unsigned char s[]) {
+	char i=0;
+	serial(0x0d);
+	while(s[i]!='\0')
+		serial(s[i++]);
 }
 
-void printf(unsigned char s[])
-{
-	char i;
-	i=0;
-	serial(0x0d);
-	while(1)
-	{
-		if(s[i]=='\0') break;
-		serial(s[i]);
-		i++;
-	}
-
-}	
 unsigned char ReadBytePC() {
 	unsigned char RcvByte=0x00;
 	while(RI==0);
@@ -49,37 +47,15 @@ unsigned char ReadBytePC() {
 	RI=0;
 	byte2PC(RcvByte);
 	return(RcvByte);
-}
-
-unsigned char ascToNum(unsigned char x) {
-	if (x >= 0x30 && x < 0x3A) 
-		x -= 0x30;
-	else 
-		x -= 0x37;
-	return x;
-}
-
-void delay_ms(unsigned int ms)
-{
-  unsigned int t1, t2;
-
-   for(t1=0; t1<ms; t1++)
-   {
-      for(t2=0; t2<114; t2++);
-   }
-}  
-
-/*-------------------------------MAIN PROGRAM------------------------------------------*/
+}   
 
 void main(void)
 {
 	unsigned char ch,Num1,Num2;
-	TMOD=0x20;   		//0010 0000  mode 2
-	TH1=0xFD; 			//9600 baud rate
-	SCON=0x50;			// 8 bit data, 1 start and 1 stop bit
-	TR1=1; 				//start timer
-	//printf("Hello World ");
-	//byte2PC(z);//ASCII value of SPACE 
+	TMOD=0x20;   
+	TH1=0xFD; 	
+	SCON=0x50;	
+	TR1=1; 		
 	while (1)
 	{
 		printf("Enter your choice:");
@@ -124,14 +100,6 @@ void main(void)
 	}
 }
 
-void serial(unsigned char x)
-{
-	SBUF=x; 			//Place value in Buffer
-	while (TI==0)
-	{
-	}	//Wait until Transmitted
-	TI=0;
-}   
 
   
 

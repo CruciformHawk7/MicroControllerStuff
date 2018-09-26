@@ -1,4 +1,19 @@
 #include <AT89X51.H> 
+
+void serial(unsigned char x) {
+	SBUF=x;
+	while (TI==0);
+	TI=0;
+}  
+
+unsigned char ascToNum(unsigned char x) {
+	if (x >= 0x30 && x < 0x3A) 
+		x -= 0x30;
+	else 
+		x -= 0x37;
+	return x;
+}
+
 void byte2PC(unsigned char b) {
 	serial(numToAsc(b>>4));
 	serial(numToAsc(b & 0x0f));
@@ -11,7 +26,6 @@ unsigned char numToAsc(unsigned char x) {
 		x += 0x37;
 	return x;
 }
-
 void printf(unsigned char s[]) {
 	char i=0;
 	serial(0x0d);
@@ -29,20 +43,6 @@ unsigned char ReadBytePC() {
 	RI=0;
 	byte2PC(RcvByte);
 	return(RcvByte);
-}
-
-unsigned char ascToNum(unsigned char x) {
-	if (x >= 0x30 && x < 0x3A) 
-		x -= 0x30;
-	else 
-		x -= 0x37;
-	return x;
-}
-
-void serial(unsigned char x) {
-	SBUF=x; 			//Place value in Buffer
-	while (TI==0);
-	TI=0;
 }   
 
 void main(void) {

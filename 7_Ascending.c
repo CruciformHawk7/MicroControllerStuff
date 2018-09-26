@@ -1,4 +1,19 @@
 #include <AT89X51.H> 
+
+void serial(unsigned char x) {
+	SBUF=x;
+	while (TI==0);
+	TI=0;
+}  
+
+unsigned char ascToNum(unsigned char x) {
+	if (x >= 0x30 && x < 0x3A) 
+		x -= 0x30;
+	else 
+		x -= 0x37;
+	return x;
+}
+
 void byte2PC(unsigned char b) {
 	serial(numToAsc(b>>4));
 	serial(numToAsc(b & 0x0f));
@@ -11,7 +26,6 @@ unsigned char numToAsc(unsigned char x) {
 		x += 0x37;
 	return x;
 }
-
 void printf(unsigned char s[]) {
 	char i=0;
 	serial(0x0d);
@@ -29,24 +43,9 @@ unsigned char ReadBytePC() {
 	RI=0;
 	byte2PC(RcvByte);
 	return(RcvByte);
-}
-
-unsigned char ascToNum(unsigned char x) {
-	if (x >= 0x30 && x < 0x3A) 
-		x -= 0x30;
-	else 
-		x -= 0x37;
-	return x;
-}
-
-void serial(unsigned char x) {
-	SBUF=x; 			//Place value in Buffer
-	while (TI==0);
-	TI=0;
 }   
 
-void bubbleSort(unsigned char arr[], unsigned char len)
-{
+void bubbleSort(unsigned char arr[], unsigned char len) {
    unsigned char i, j, temp;
    for (i = 0; i < len-1; i++) {     
        for (j = 0; j < len-i-1; j++) {
@@ -59,8 +58,7 @@ void bubbleSort(unsigned char arr[], unsigned char len)
    }
 }
 
-void notBubbleSort(unsigned char arr[], unsigned char len)
-{
+void notBubbleSort(unsigned char arr[], unsigned char len) {
    unsigned char i, j, temp;
    for (i = 0; i < len-1; i++) {     
        for (j = 0; j < len-i-1; j++) {
@@ -82,9 +80,7 @@ void main(void) {
 	while (1) {
 		printf("Enter number of values to be stored (less than 25):");
 		len = ReadBytePC();
-		for (i=0; i<len;i++) {
-			inp[i]=ReadBytePC();
-		}
+		for (i=0; i<len;i++) inp[i]=ReadBytePC();
 		printf("Enter: ");
 		printf("1. Ascending");
 		printf("2. Descending");
@@ -94,7 +90,7 @@ void main(void) {
 		printf("Sorted array is:");
 		for(i=0;i<len;i++) {
 			byte2PC(inp[i]);
-			byte2PC(0x09);		//Horizontal tab
+			printf(" ");
 		}
 	}
 }

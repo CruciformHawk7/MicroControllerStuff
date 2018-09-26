@@ -3,26 +3,40 @@
 /*---------------------------------------------------------------------------------------*/
 
 #include <AT89X51.H> 
-void byte2PC(unsigned char b) {
-	serial(testNibbile(b>>4));
-	serial(testNibbile(b & 0x0f));
+
+void serial(unsigned char x) {
+	SBUF=x;
+	while (TI==0);
+	TI=0;
+}  
+
+unsigned char ascToNum(unsigned char x) {
+	if (x >= 0x30 && x < 0x3A) 
+		x -= 0x30;
+	else 
+		x -= 0x37;
+	return x;
 }
 
-unsigned char testNibbile(unsigned char x) {
+void byte2PC(unsigned char b) {
+	serial(numToAsc(b>>4));
+	serial(numToAsc(b & 0x0f));
+}
+
+unsigned char numToAsc(unsigned char x) {
 	if (x >= 0x00 && x < 0x0A) 
 		x += 0x30;
 	else 
 		x += 0x37;
 	return x;
 }
-
 void printf(unsigned char s[]) {
-	char i;
-	i=0;
+	char i=0;
 	serial(0x0d);
 	while(s[i]!='\0')
 		serial(s[i++]);
-}	
+}
+
 unsigned char ReadBytePC() {
 	unsigned char RcvByte=0x00;
 	while(RI==0);
@@ -33,23 +47,7 @@ unsigned char ReadBytePC() {
 	RI=0;
 	byte2PC(RcvByte);
 	return(RcvByte);
-}
-
-unsigned char ascToNum(unsigned char x) {
-	if (x >= 0x30 && x < 0x3A) 
-		x -= 0x30;
-	else 
-		x -= 0x37;
-	return x;
-}
-
-void serial(unsigned char x) {
-	SBUF=x; 			//Place value in Buffer
-	while (TI==0);
-	TI=0;
 }   
-
-/*-------------------------------MAIN PROGRAM------------------------------------------*/
 
 void main(void) {
 	unsigned char sum=0x00, cont=0x59; 	//Cap Y, or 0x79
